@@ -1,3 +1,5 @@
+#Requires -Version 5.1
+
 function Update-PowerShellModules {
     <#
     .SYNOPSIS
@@ -29,7 +31,12 @@ function Update-PowerShellModules {
         [string[]]$ExcludedModules = @(
             "PowerShellAI",
             "Template",
+            "PSReadLine",
+            "Pansies",
+            "ModSentry",
             "PowerShellAI.Functions",
+            "Microsoft.WinGet.Client",
+            "Microsoft.WinGet.DSC",
             "Microsoft.PowerToys.Configure",
             "Microsoft.PowerShell.Operation.Validation"
         )
@@ -38,7 +45,7 @@ function Update-PowerShellModules {
     # Update self (this module) from git
     try {
         $moduleRoot = $PSScriptRoot
-        if (Test-Path "$moduleRoot\\.git") {
+        if (Test-Path "$moduleRoot\.git") {
             Write-Host "🔄 Pulling latest version of ModSentry from Git..." -ForegroundColor Cyan
             Push-Location $moduleRoot
             git pull
@@ -48,6 +55,7 @@ function Update-PowerShellModules {
         Write-Host "❌ Failed to update ModSentry module via git: $_" -ForegroundColor Red
     }
 
+    # Validate path
     if (-not (Test-Path -Path $ModulesPath)) {
         Write-Host "Directory not found: ${ModulesPath}" -ForegroundColor Red
         return
