@@ -24,13 +24,12 @@ function Update-PowerShellModules {
 
     [CmdletBinding()]
     param (
-        [Parameter()]
+        [Parameter(Mandatory = $false)]
         [string]$ModulesPath = "D:\apps\PowerShell\Modules",
 
-        [Parameter()]
+        [Parameter(Mandatory = $false)]
         [string[]]$ExcludedModules = @(
             "PowerShellAI",
-            "Pansies",
             "Template",
             "PowerShellAI.Functions",
             "Microsoft.PowerToys.Configure",
@@ -38,18 +37,30 @@ function Update-PowerShellModules {
         )
     )
 
+    # Update self (this module) from git
+    try {
+        $moduleRoot = $PSScriptRoot
+        if (Test-Path "$moduleRoot\.git") {
+            Write-Host "🔄 Pulling latest version of ModSentry from Git..." -ForegroundColor Cyan
+            Push-Location $moduleRoot
+            git pull
+            Pop-Location
+        }
+    } catch {
+        Write-Host "❌ Failed to update ModSentry module via git: $_" -ForegroundColor Red
+    }
+
     # Validate path
     if (-not (Test-Path -Path $ModulesPath)) {
         Write-Host "Directory not found: ${ModulesPath}" -ForegroundColor Red
         return
     }
 
-    # Announce scanning location
-    Write-Host "Scanning for modules in directory: ${ModulesPath}" -ForegroundColor Cyan
+    Write-Host "📁 Scanning module directory: ${ModulesPath}" -ForegroundColor Cyan
 
     $installedModules = Get-ChildItem -Path $ModulesPath -Directory
     if ($installedModules.Count -eq 0) {
-        Write-Host "No modules found in directory: ${ModulesPath}" -ForegroundColor Yellow
+        Write-Host "⚠️ No modules found in: ${ModulesPath}" -ForegroundColor Yellow
         return
     }
 
@@ -58,42 +69,37 @@ function Update-PowerShellModules {
     foreach ($module in $installedModules) {
         $moduleName = $module.Name
 
-        # Skip excluded modules
         if ($ExcludedModules -contains $moduleName) {
-            Write-Host "Skipping excluded module: ${moduleName}" -ForegroundColor DarkGray
+            Write-Host "⏭️ Skipping excluded module: ${moduleName}" -ForegroundColor DarkGray
             continue
         }
 
         try {
-            # Get installed version
             $installedVersion = (Get-Module -ListAvailable -Name $moduleName |
                 Sort-Object Version -Descending | Select-Object -First 1).Version
 
             if (-not $installedVersion) {
-                Write-Host "Module ${moduleName} is not recognized by Get-Module." -ForegroundColor Yellow
+                Write-Host "❔ Module ${moduleName} not recognized by Get-Module." -ForegroundColor Yellow
                 continue
             }
 
-            # Get latest version from PSGallery
             $galleryModule = Find-Module -Name $moduleName -ErrorAction Stop -AllowPrerelease -Repository 'PSGallery'
             $latestVersion = $galleryModule.Version
 
             if ($latestVersion -gt $installedVersion) {
-                Write-Host "Updating ${moduleName}: ${installedVersion} -> ${latestVersion}" -ForegroundColor Yellow
-
+                Write-Host "⬆️ Updating ${moduleName}: ${installedVersion} -> ${latestVersion}" -ForegroundColor Yellow
                 Save-Module -Name $moduleName -Force -Path $ModulesPath -RequiredVersion $latestVersion -AllowPrerelease
-
-                Write-Host "${moduleName} updated to version ${latestVersion}." -ForegroundColor Green
+                Write-Host "✅ ${moduleName} updated to version ${latestVersion}." -ForegroundColor Green
                 $updatedModules++
             }
             else {
-                Write-Host "${moduleName} is already up to date (version ${installedVersion})." -ForegroundColor DarkGray
+                Write-Host "✔️ ${moduleName} is already up to date (${installedVersion})." -ForegroundColor DarkGray
             }
         }
         catch {
-            Write-Host "Error updating ${moduleName}: $_" -ForegroundColor Red
+            Write-Host "❌ Error updating ${moduleName}: $_" -ForegroundColor Red
         }
     }
 
-    Write-Host "Update complete. Modules checked: $($installedModules.Count), updated: ${updatedModules}." -ForegroundColor Cyan
+    Write-Host "✅ Scan complete. Total modules: $($installedModules.Count), Updated: ${updatedModules}." -ForegroundColor Cyan
 }

@@ -1,12 +1,29 @@
-# ModSentry
+# ModSentry 🔧🚀
 
 ModSentry is a PowerShell module designed to streamline the management of PowerShell modules in a specified directory. It checks for newer versions of modules in the PowerShell Gallery (PSGallery), updates outdated modules, and allows you to exclude specific modules from the update process.
 
-## Features
+## Features ✨
+
+- 🔄 Automatically updates itself via Git (`git pull`)
+- 📁 Scans a specified folder for installed modules
+- ⬆️ Checks for newer versions in PSGallery
+- ❌ Skips excluded modules by name
+- ✅ Color-coded output for better readability
+
 - **Scan and Update**: Scans a local directory for PowerShell modules and updates them to the latest version available in PSGallery.
 - **Exclude Modules**: Specify modules to skip during the update process.
 - **Error Handling**: Provides detailed feedback on successes, skips, and errors during the update process.
 - **Customizable Path**: Allows you to define the directory containing the modules to be checked.
+
+## Usage 💻
+
+```powershell
+# Import the module
+Import-Module ./ModSentry.psm1
+
+# Run the update function
+Update-PowerShellModules
+```
 
 ## Requirements
 - PowerShell 5.1 or later
@@ -20,9 +37,6 @@ ModSentry is a PowerShell module designed to streamline the management of PowerS
    ```powershell
    Import-Module ModSentry
    ```
-
-## Usage
-Run the `Update-PowerShellModules` function to scan and update modules in the specified directory. You can customize the path and exclude specific modules.
 
 ### Example
 ```powershell
