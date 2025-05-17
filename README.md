@@ -26,35 +26,43 @@ Update-PowerShellModules
 ```
 
 ## Requirements
+
 - PowerShell 5.1 or later
 - Access to the PowerShell Gallery (PSGallery)
 - Write permissions to the specified modules directory
 
 ## Installation
+
 1. Download the `ModSentry.psm1` file from the [releases page](#).
 2. Place it in a directory listed in your `$PSModulePath` (e.g., `C:\Program Files\WindowsPowerShell\Modules\ModSentry`).
 3. Import the module using:
-   ```powershell
-   Import-Module ModSentry
-   ```
+
+```powershell
+Import-Module ModSentry
+```
 
 ### Example
+
 ```powershell
 Update-PowerShellModules -ModulesPath "D:\apps\PowerShell\Modules" -ExcludedModules @("PowerShellAI", "Pansies")
 ```
 
 ### Parameters
+
 - **ModulesPath**: The directory containing the PowerShell modules to check and update. Default: `D:\apps\PowerShell\Modules`.
 - **ExcludedModules**: An array of module names to exclude from updates. Default: A predefined list of common modules.
 
 ### Output
+
 The function outputs:
+
 - The directory being scanned.
 - Status for each module (skipped, up-to-date, updated, or error).
 - A summary of the total modules checked and updated.
 
 ## Example Output
-```
+
+```powershell
 Scanning for modules in directory: D:\apps\PowerShell\Modules
 Skipping excluded module: PowerShellAI
 Module PSReadLine is already up to date (version 2.2.6).
@@ -64,7 +72,9 @@ Update complete. Modules checked: 10, updated: 1.
 ```
 
 ## Contributing
+
 Contributions are welcome! Please submit a pull request or open an issue on the [GitHub repository](#).
 
 ## License
+
 This project is licensed under the MIT License. See the [LICENSE](#) file for details.
